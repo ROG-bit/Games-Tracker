@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bad People Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Bad People Game Tracker</h1>
+  <div id="app">
+    <input type="text" id="playerName" placeholder="Enter player name" />
+    <button id="addPlayerBtn">Add Player</button>
+
+    <div class="controls">
+      <button id="undoBtn">Undo</button>
+      <button id="redoBtn">Redo</button>
+      <button id="resetScoresBtn">Reset Scores</button>
+    </div>
+
+    <h2>Players</h2>
+    <ul id="playersList"></ul>
+
+    <h2>Leaderboard</h2>
+    <ol id="leaderboard"></ol>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
