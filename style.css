@@ -112,6 +112,23 @@ button:hover:not(:disabled) {
 
 /* Leaderboard */
 #leaderboard {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#leaderboard th, #leaderboard td {
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+#leaderboard th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+#leaderboard {
   list-style: none;
   padding-left: 0;
 }
@@ -138,4 +155,72 @@ button:hover:not(:disabled) {
   background-color: #3498db;
   margin-left: 15px;
   transition: width 0.4s ease;
+}
+
+th:first-child, td:first-child {
+  font-weight: bold;
+  background: #f0f0f0;
+  text-align: center;
+}
+
+.score-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.score-value {
+  min-width: 18px;
+  font-weight: bold;
+}
+
+.score-bar-bg {
+  flex: 1;
+  height: 14px;
+  background: #e0e7ef;
+  border-radius: 7px;
+  overflow: hidden;
+  min-width: 60px;
+  max-width: 120px;
+}
+
+.score-bar-fill {
+  height: 100%;
+  border-radius: 7px 0 0 7px;
+  transition: width 0.3s, background 0.3s;
+}
+
+.big-score {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #222;
+}
+
+.score-btn {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1em;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.plus-btn {
+  background: #3498db;
+  color: #fff;
+}
+
+.plus-btn:hover {
+  background: #217dbb;
+}
+
+.minus-btn {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.minus-btn:hover {
+  background: #c0392b;
 }

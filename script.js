@@ -6,7 +6,10 @@ const redoBtn = document.getElementById('redoBtn');
 const resetScoresBtn = document.getElementById('resetScoresBtn');
 const leaderboard = document.getElementById('leaderboard');
 
-let players = [];
+let players = [
+  { id: 1, name: "Alice", scores: [10, 20, 15] },
+  // ...
+];
 let undoStack = [];
 let redoStack = [];
 
@@ -156,86 +159,75 @@ function enterEditMode(playerIndex, listItem) {
   input.focus();
 }
 
-function renderLeaderboard() {
-  leaderboard.innerHTML = '';
-  if (players.length === 0) {
-    leaderboard.innerHTML = '<li>No players yet</li>';
-    return;
-  }
+// Example player data structure
+const playersData = [
+  { name: "Waqas", score: 3 },
+  { name: "Ross", score: 1 },
+  { name: "Ranin", score: 1 },
+  { name: "Asia", score: 0 }
+];
 
-  // Sort players by score descending
-  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+function getBarColor(percent) {
+  if (percent >= 0.7) return "#27ae60";      // Green
+  if (percent >= 0.4) return "#f39c12";      // Orange
+  if (percent > 0)    return "#f1c40f";      // Yellow
+  return "#e0e7ef";                          // Gray for zero
+}
+
+// Function to render leaderboard
+function renderLeaderboard() {
+  const leaderboardBody = document.querySelector("#leaderboard tbody");
+  leaderboardBody.innerHTML = "";
+
   const maxScore = Math.max(...players.map(p => p.score), 1);
 
-  // Find highest score to mark leader(s)
-  const highestScore = sortedPlayers[0].score;
+  players
+    .sort((a, b) => b.score - a.score)
+    .forEach((player, idx) => {
+      const row = document.createElement("tr");
 
-  sortedPlayers.forEach((player) => {
-    const li = document.createElement('li');
+      // Total Score column with progress bar
+      const percent = player.score / maxScore;
+      const barColor = getBarColor(percent);
 
-    // Name and crown if top scorer
-    const nameDiv = document.createElement('div');
-    nameDiv.className = 'leaderboard-name';
-    nameDiv.textContent = player.name;
-    if (player.score === highestScore && highestScore > 0) {
-      nameDiv.textContent += ' 👑';
-    }
+      const scoreCell = document.createElement("td");
+      scoreCell.className = "score-cell";
+      scoreCell.innerHTML = `
+        <div class="score-bar-container">
+          <span class="score-value big-score">${player.score}</span>
+          <div class="score-bar-bg">
+            <div class="score-bar-fill" style="width: ${(percent * 100)}%; background: ${barColor};"></div>
+          </div>
+        </div>
+      `;
+      row.appendChild(scoreCell);
 
-    // Add -1 button (red)
-    const subtractBtn = document.createElement('button');
-    subtractBtn.textContent = '-1';
-    subtractBtn.style.marginLeft = '10px';
-    subtractBtn.style.padding = '5px 10px';
-    subtractBtn.style.fontSize = '14px';
-    subtractBtn.style.borderRadius = '6px';
-    subtractBtn.style.border = 'none';
-    subtractBtn.style.backgroundColor = '#e74c3c'; // red
-    subtractBtn.style.color = 'white';
-    subtractBtn.style.cursor = 'pointer';
-    subtractBtn.addEventListener('click', () => {
-      if (player.score > 0) {
-        saveState();
-        player.score--;
-        savePlayers();
-        renderPlayers();
-      }
+      // Player Name column with +1 and -1 buttons
+      const nameCell = document.createElement("td");
+      nameCell.innerHTML = `
+        ${player.name}
+        <button class="score-btn minus-btn" data-idx="${idx}" data-action="minus">-1</button>
+        <button class="score-btn plus-btn" data-idx="${idx}" data-action="plus">+1</button>
+      `;
+      row.appendChild(nameCell);
+
+      leaderboardBody.appendChild(row);
     });
 
-    // Add +1 button (blue)
-    const addPointBtn = document.createElement('button');
-    addPointBtn.textContent = '+1';
-    addPointBtn.style.marginLeft = '10px';
-    addPointBtn.style.padding = '5px 10px';
-    addPointBtn.style.fontSize = '14px';
-    addPointBtn.style.borderRadius = '6px';
-    addPointBtn.style.border = 'none';
-    addPointBtn.style.backgroundColor = '#3498db'; // blue
-    addPointBtn.style.color = 'white';
-    addPointBtn.style.cursor = 'pointer';
-    addPointBtn.addEventListener('click', () => {
-      saveState();
-      player.score++;
-      savePlayers();
-      renderPlayers();
+  // Add event listeners for the buttons
+  leaderboardBody.querySelectorAll('.score-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = parseInt(this.getAttribute('data-idx'));
+      const action = this.getAttribute('data-action');
+      if (action === 'plus') players[idx].score += 1;
+      if (action === 'minus') players[idx].score = Math.max(0, players[idx].score - 1);
+      renderLeaderboard();
     });
-
-    const barDiv = document.createElement('div');
-    barDiv.className = 'leaderboard-bar';
-
-    // Width proportional to score (max 100%)
-    const widthPercent = (player.score / maxScore) * 100;
-    barDiv.style.width = `${widthPercent}%`;
-
-    // Show points inside the bar (always)
-    barDiv.textContent = player.score;
-
-    li.appendChild(nameDiv);
-    li.appendChild(subtractBtn);
-    li.appendChild(addPointBtn);
-    li.appendChild(barDiv);
-    leaderboard.appendChild(li);
   });
 }
+
+// Call this function whenever the leaderboard needs to update
+renderLeaderboard();
 
 addPlayerBtn.addEventListener('click', () => {
   const name = playerNameInput.value.trim();
@@ -257,3 +249,9 @@ addPlayerBtn.addEventListener('click', () => {
 // Initial render and button states
 renderPlayers();
 updateUndoRedoButtons();
+
+const playersWithTotals = players.map(player => ({
+  ...player,
+  totalPoints: player.scores.reduce((sum, score) => sum + score, 0)
+}));
+// Use playersWithTotals in your render instead of players
